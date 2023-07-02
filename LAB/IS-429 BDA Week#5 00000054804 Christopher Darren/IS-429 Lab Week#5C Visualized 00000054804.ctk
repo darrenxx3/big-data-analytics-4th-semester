@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Task schemaVersion="5.4">
+    <Registration>
+        <Name>Bar-Line Chart</Name>
+        <Description>Bar-line chart is a vertical bar chart with a line plot overlay. The line plot represents the value of a statistic that is calculated for one of the variables in the input data set.</Description>
+        <GUID>22D62798-E520-42D0-B11C-5244CD435FC9</GUID>
+        <Procedures>SGPLOT MEANS</Procedures>
+        <Version>3.8</Version>
+        <Links>
+            <Link href="http://documentation.sas.com/?softwareId=STUDIOMID&amp;softwareVersion=3.8&amp;softwareContextId=tasks&amp;requestor=inapp">SAS Studio Task Reference Guide</Link>
+            <Link href=""/>
+            <Link href=""/>
+            <Link href="http://documentation.sas.com/?softwareId=MVADOC&amp;softwareVersion=3.8_9.4&amp;softwareContextId=proc_sgplot&amp;requestor=inapp">The SGPLOT Procedure</Link>
+            <Link href=""/>
+            <Link href=""/>
+            <Link href="http://documentation.sas.com/?softwareId=MVADOC&amp;softwareVersion=3.8_9.4&amp;softwareContextId=proc_means&amp;requestor=inapp">The MEANS Procedure</Link>
+            <Link href=""/>
+            <Link href=""/>
+            <Link href="http://support.sas.com/training/tutorial/viya/index.html">SAS Tutorials</Link>
+        </Links>
+    </Registration>
+    <Metadata>
+        <!--- Define the data roles for this task.    -->
+        <DataSources>
+            <DataSource name="dataSource" where="true">
+                <Roles>
+                    <Role
+                        exclude="barResponse,lineResponse,group,barUrlVar,lineUrlVar,byVar,weight"
+                        maxVars="1" minVars="1" name="category" type="A">Category:</Role>
+                    <Role
+                        exclude="category,lineResponse,group,barUrlVar,lineUrlVar,byVar,weight"
+                        maxVars="1" minVars="1" name="barResponse" type="N">Bar variable:</Role>
+                    <Role
+                        exclude="category,barResponse,group,barUrlVar,lineUrlVar,byVar,weight"
+                        maxVars="1" minVars="1" name="lineResponse" type="N">Line variable:</Role>
+                    <Role
+                        exclude="category,barResponse,lineResponse,barUrlVar,lineUrlVar,byVar,weight"
+                        maxVars="1" minVars="0" name="group" type="A">Subcategory:</Role>
+                    <Role
+                        exclude="category,barResponse,lineResponse,group,byVar,weight"
+                        maxVars="1" minVars="0" name="barUrlVar" type="C">URL variable:</Role>
+                    <Role
+                        exclude="category,barResponse,lineResponse,group,byVar,weight"
+                        maxVars="1" minVars="0" name="lineUrlVar" type="C">URL variable:</Role>
+                    <Role
+                        exclude="category,barResponse,lineResponse,group,barUrlVar,lineUrlVar,weight"
+                        maxVars="1" minVars="0" name="byVar" type="A">Group analysis by:</Role>
+                    <Role
+                        exclude="category,barResponse,lineResponse,group,barUrlVar,lineUrlVar,byVar"
+                        maxVars="1" minVars="0" name="weight" type="N">Weight:</Role>
+                </Roles>
+            </DataSource>
+        </DataSources>
+        <Options>
+            <Option inputType="string" name="dataTab">DATA</Option>
+            <Option inputType="string" name="dataGroup">DATA</Option>
+            <Option inputType="string" name="rolesGroup">ROLES</Option>
+            <Option inputType="string" name="addRolesGroup">ADDITIONAL ROLES</Option>
+            <Option inputType="string" name="appearanceTab">APPEARANCE</Option>
+            <!--- Define the task options.-->
+            <Option defaultValue="0" inputType="checkbox" name="includeAsFootnote">Include filter clause as footnote</Option>
+            <!--- 'whereClause' option only used in code template.-->
+            <Option inputType="string" name="whereClause">Where clause:</Option>
+            <Option inputType="string" name="title">TITLE AND FOOTNOTE</Option>
+            <Option defaultValue="" inputType="inputtext"
+                name="titleString" width="400px">Title:</Option>
+            <Option decimalPlaces="0" defaultValue="14" increment="1"
+                indent="1" inputType="numstepper"
+                invalidMessage="Enter an integer greater than or equal to 5 and less than or equal to 24."
+                maxValue="24" minValue="5"
+                missingMessage="Enter an integer greater than or equal to 5 and less than or equal to 24."
+                name="titleSize"
+                promptMessage="Enter an integer greater than or equal to 5 and less than or equal to 24."
+                rangeMessage="Enter an integer greater than or equal to 5 and less than or equal to 24."
+                required="true" size="8em">Font size (default: 14 pt):</Option>
+            <Option defaultValue="" inputType="inputtext"
+                name="footnoteString" width="400px">Footnote:</Option>
+            <Option decimalPlaces="0" defaultValue="12" increment="1"
+                indent="1" inputType="numstepper"
+                invalidMessage="Enter an integer greater than or equal to 5 and less than or equal to 20."
+                maxValue="20" minValue="5"
+                missingMessage="Enter an integer greater than or equal to 5 and less than or equal to 20."
+                name="footnoteSize"
+                promptMessage="Enter an integer greater than or equal to 5 and less than or equal to 20."
+                rangeMessage="Enter an integer greater than or equal to 5 and less than or equal to 20."
+                required="true" size="8em">Font size (default: 12 pt):</Option>
+            <Option indent="1" inputType="string" name="statistics1">Statistics:</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="barMean" variable="barStat">Mean</Option>
+            <Option indent="1" inputType="radio" name="barSum" variable="barStat">Sum</Option>
+            <Option indent="1" inputType="string" name="statistics2">Statistics:</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="lineMean" variable="lineStat">Mean</Option>
+            <Option indent="1" inputType="radio" name="lineSum" variable="lineStat">Sum</Option>
+            <!--- BARS options -->
+            <Option inputType="string" name="barsGroup">BARS</Option>
+            <Option defaultValue="0" inputType="checkbox" name="barStatLabels">Show labels</Option>
+            <Option defaultValue="0" inputType="checkbox" name="useBarColor">Set color</Option>
+            <Option defaultValue="#CAD5E5" indent="1" inputType="color" name="barColor">Color</Option>
+            <Option defaultValue="0" inputType="combobox"
+                name="barTrans" width="175px">Color transparency:</Option>
+            <Option inputType="string" name="barTransDefaultChoice" returnValue="0">0% (default)</Option>
+            <Option inputType="string" name="barTrans25Choice" returnValue="0.25">25%</Option>
+            <Option inputType="string" name="barTrans50Choice" returnValue="0.5">50%</Option>
+            <Option inputType="string" name="barTrans75Choice" returnValue="0.75">75%</Option>
+            <Option inputType="string" name="barTrans100Choice" returnValue="1">100%</Option>
+            <Option inputType="string" name="barDetails">Details</Option>
+            <Option defaultValue="0" inputType="checkbox" name="fillGradient">Apply color gradient</Option>
+            <Option defaultValue="none" inputType="combobox"
+                name="barSkin" width="175px">Effect:</Option>
+            <Option inputType="string" name="none">(none)</Option>
+            <Option inputType="string" name="gloss">Gloss</Option>
+            <Option inputType="string" name="sheen">Sheen</Option>
+            <Option inputType="string" name="crisp">Crisp</Option>
+            <Option inputType="string" name="matte">Matte</Option>
+            <Option inputType="string" name="pressed">Pressed</Option>
+            <!--- LINES options -->
+            <Option inputType="string" name="linesGroup">LINES</Option>
+            <Option defaultValue="0" inputType="checkbox" name="lineStatLabels">Show labels</Option>
+            <Option defaultValue="0" inputType="checkbox" name="useLineColor">Set color</Option>
+            <Option defaultValue="#003399" indent="1" inputType="color" name="lineColor">Color</Option>
+            <Option decimalPlaces="0" defaultValue="1" increment="1"
+                inputType="numstepper" maxValue="20" minValue="1"
+                name="lineThick" required="true" size="8em">Thickness (default: 1 pixel):</Option>
+            <Option defaultValue="0" inputType="combobox"
+                name="lineTrans" width="175px">Color transparency:</Option>
+            <Option inputType="string" name="lineTransDefaultChoice" returnValue="0">0% (default)</Option>
+            <Option inputType="string" name="lineTrans25Choice" returnValue="0.25">25%</Option>
+            <Option inputType="string" name="lineTrans50Choice" returnValue="0.5">50%</Option>
+            <Option inputType="string" name="lineTrans75Choice" returnValue="0.75">75%</Option>
+            <Option inputType="string" name="lineTrans100Choice" returnValue="1">100%</Option>
+            <Option inputType="string" name="lineDetails">Details</Option>
+            <Option defaultValue="solid" inputType="combobox" name="linePattern">Line style:</Option>
+            <Option inputType="string" name="solidLine" returnValue="solid">Solid (default)</Option>
+            <Option inputType="string" name="shortDashLine" returnValue="shortdash">Short-dash</Option>
+            <Option inputType="string" name="mediumDashLine" returnValue="mediumdash">Medium-dash</Option>
+            <Option inputType="string" name="longDashLine" returnValue="longdash">Long-dash</Option>
+            <Option inputType="string" name="mediumDashShortDashLine" returnValue="mediumdashshortdash">Medium-dash short-dash</Option>
+            <Option inputType="string" name="dashDashDotLine" returnValue="dashdashdot">Dash dash dot</Option>
+            <Option inputType="string" name="dashDotDotLine" returnValue="dashdotdot">Dash dot dot</Option>
+            <Option inputType="string" name="dashLine" returnValue="dash">Dash</Option>
+            <Option inputType="string" name="longDashShortDashLine" returnValue="longdashshortdash">Long-dash short-dash</Option>
+            <Option inputType="string" name="dotLine" returnValue="dot">Dot</Option>
+            <Option inputType="string" name="thinDotLine" returnValue="thindot">Thin-dot</Option>
+            <Option inputType="string" name="shortDashDotLine" returnValue="shortdashdot">Short-dash dot</Option>
+            <Option inputType="string" name="mediumDashDotDotLine" returnValue="mediumdashdotdot">Medium-dash dot dot</Option>
+            <!--- AXES options -->
+            <Option inputType="string" name="categoryAxis">X AXIS</Option>
+            <Option defaultValue="0" inputType="checkbox" name="catReverse">Reverse tick values</Option>
+            <Option defaultValue="0" inputType="checkbox" name="sortByData">Show tick values in data order</Option>
+            <Option defaultValue="defaultLabel" inputType="combobox" name="displayCatLabel">Display label:</Option>
+            <Option inputType="string" name="defaultLabel">Default label</Option>
+            <Option inputType="string" name="noLabel">No label</Option>
+            <Option inputType="string" name="customLabel">Custom label</Option>
+            <Option defaultValue="" indent="1" inputType="inputtext"
+                name="catLabel" required="true" width="300px">Label:</Option>
+            <Option defaultValue="0" inputType="checkbox" name="catLabelRotation">Rotate labels in case of tick collisions</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="catDiagonalRotation" variable="catTickRotate">Rotate by 45 degrees</Option>
+            <Option indent="1" inputType="radio"
+                name="catVerticalRotation" variable="catTickRotate">Rotate by 90 degrees</Option>
+            <Option defaultValue="0" inputType="checkbox" name="catRefLine">Create a reference line</Option>
+            <Option indent="1" inputType="distinct"
+                name="catRefLineValue" required="true"
+                selectMessage="Select a reference value" source="category">Reference value:</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="catRefValue" variable="catRefLabel">Reference value as label</Option>
+            <Option indent="1" inputType="radio" name="catRefCustom" variable="catRefLabel">Custom label</Option>
+            <Option defaultValue="" indent="2" inputType="inputtext"
+                name="catRefCustomLabel" required="true" width="300px">Label:</Option>
+            <Option defaultValue="0" indent="1" inputType="combobox"
+                name="catRefLineOffset" width="175px">Line offset:</Option>
+            <Option inputType="string"
+                name="catRefLineOffsetDefaultChoice" returnValue="0">0 (default)</Option>
+            <Option inputType="string"
+                name="catRefLineOffsetNegative50Choice" returnValue="-0.5">-0.5</Option>
+            <Option inputType="string"
+                name="catRefLineOffsetNegative25Choice" returnValue="-0.25">-0.25</Option>
+            <Option inputType="string" name="catRefLineOffset25Choice" returnValue="0.25">0.25</Option>
+            <Option inputType="string" name="catRefLineOffset50Choice" returnValue="0.5">0.5</Option>
+            <Option inputType="string" name="yAxes">Y AXES</Option>
+            <Option defaultValue="1" inputType="checkbox" name="zeroBaseline">Use zero baseline</Option>
+            <Option defaultValue="0" inputType="checkbox" name="uniformScale">Use uniform scale</Option>
+            <!--- 'showBarGrid' only controls yaxis (Bar Axis). Don't offer grid control for y2axis. -->
+            <Option defaultValue="1" inputType="checkbox" name="showBarGrid">Show grid lines</Option>
+            <Option inputType="string" name="barAxis">Bar Axis</Option>
+            <Option defaultValue="defaultLabel" inputType="combobox" name="displayBarLabel">Display label:</Option>
+            <Option inputType="string" name="statsLabel">Statistics name in label</Option>
+            <Option inputType="string" name="noStatsLabel">No statistics name in label</Option>
+            <Option defaultValue="" indent="1" inputType="inputtext"
+                name="barLabel" required="true" width="300px">Label:</Option>
+            <Option defaultValue="0" inputType="checkbox" name="barRefLine">Create a reference line</Option>
+            <Option indent="1" inputType="numbertext"
+                invalidMessage="Enter a number."
+                missingMessage="Enter a number." name="barRefLineValue"
+                promptMessage="Enter a number."
+                rangeMessage="Enter a number." required="true" width="6em">Reference value:</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="barRefValue" variable="barRefLabel">Reference value as label</Option>
+            <Option indent="1" inputType="radio" name="barRefCustom" variable="barRefLabel">Custom label</Option>
+            <Option defaultValue="" indent="2" inputType="inputtext"
+                name="barRefCustomLabel" required="true" width="300px">Label:</Option>
+            <Option inputType="string" name="lineAxis">Line Axis</Option>
+            <Option defaultValue="defaultLabel" inputType="combobox" name="displayLineLabel">Display label:</Option>
+            <Option defaultValue="" indent="1" inputType="inputtext"
+                name="lineLabel" required="true" width="300px">Label:</Option>
+            <Option defaultValue="0" inputType="checkbox" name="lineRefLine">Create a reference line</Option>
+            <Option indent="1" inputType="numbertext"
+                invalidMessage="Enter a number."
+                missingMessage="Enter a number." name="lineRefLineValue"
+                promptMessage="Enter a number."
+                rangeMessage="Enter a number." required="true" width="6em">Reference value:</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="lineRefValue" variable="lineRefLabel">Reference value as label</Option>
+            <Option indent="1" inputType="radio" name="lineRefCustom" variable="lineRefLabel">Custom label</Option>
+            <Option defaultValue="" indent="2" inputType="inputtext"
+                name="lineRefCustomLabel" required="true" width="300px">Label:</Option>
+            <Option inputType="string" name="legend">LEGEND</Option>
+            <Option defaultValue="outside" inputType="combobox"
+                name="legendLoc" width="160px">Legend location:</Option>
+            <Option inputType="string" name="outside">Outside (default)</Option>
+            <Option inputType="string" name="inside">Inside</Option>
+            <Option inputType="string" name="graphSize">GRAPH SIZE</Option>
+            <Option defaultValue="in" inputType="combobox"
+                name="dimType" width="100px">Units:</Option>
+            <Option inputType="string" name="in">Inches (default)</Option>
+            <Option inputType="string" name="cm">Cms</Option>
+            <Option inputType="string" name="px">Pixels</Option>
+            <Option decimalPlaces="0,1" defaultValue="6.4"
+                increment="0.1" inputType="numstepper"
+                invalidMessage="Enter a number from 2 to 12 for the width in inches"
+                maxValue="12.0" minValue="2.0"
+                missingMessage="Enter a number from 2 to 12 for the width in inches"
+                name="inchWidth"
+                promptMessage="Enter a number from 2 to 12 for the width in inches"
+                rangeMessage="Enter a number from 2 to 12 for the width in inches"
+                required="true" size="10em">Width:</Option>
+            <Option decimalPlaces="0,1" defaultValue="4.8"
+                increment="0.1" inputType="numstepper"
+                invalidMessage="Enter a number from 2 to 12 for the height in inches"
+                maxValue="12.0" minValue="2.0"
+                missingMessage="Enter a number from 2 to 12 for the height in inches"
+                name="inchHeight"
+                promptMessage="Enter a number from 2 to 12 for the height in inches"
+                rangeMessage="Enter a number from 2 to 12 for the height in inches"
+                required="true" size="10em">Height:</Option>
+            <Option decimalPlaces="0,1" defaultValue="16"
+                increment="0.1" inputType="numstepper"
+                invalidMessage="Enter a number from 5 to 30 for the width in cms"
+                maxValue="30.0" minValue="5.0"
+                missingMessage="Enter a number from 5 to 30 for the width in cms"
+                name="cmWidth"
+                promptMessage="Enter a number from 5 to 30 for the width in cms"
+                rangeMessage="Enter a number from 5 to 30 for the width in cms"
+                required="true" size="10em">Width:</Option>
+            <Option decimalPlaces="0,1" defaultValue="12"
+                increment="0.1" inputType="numstepper"
+                invalidMessage="Enter a number from 5 to 30 for the height in cms"
+                maxValue="30.0" minValue="5.0"
+                missingMessage="Enter a number from 5 to 30 for the height in cms"
+                name="cmHeight"
+                promptMessage="Enter a number from 5 to 30 for the height in cms"
+                rangeMessage="Enter a number from 5 to 30 for the height in cms"
+                required="true" size="10em">Height:</Option>
+            <Option decimalPlaces="0,1" defaultValue="640" increment="1"
+                inputType="numstepper"
+                invalidMessage="Enter a number from 50 to 1200 for the width in pixels"
+                maxValue="1200" minValue="50"
+                missingMessage="Enter a number from 50 to 1200 for the width in pixels"
+                name="pixelWidth"
+                promptMessage="Enter a number from 50 to 1200 for the width in pixels"
+                rangeMessage="Enter a number from 50 to 1200 for the width in pixels"
+                required="true" size="10em">Width:</Option>
+            <Option decimalPlaces="0,1" defaultValue="480" increment="1"
+                inputType="numstepper"
+                invalidMessage="Enter a number from 50 to 1200 for the height in pixels"
+                maxValue="1200" minValue="50"
+                missingMessage="Enter a number from 50 to 1200 for the height in pixels"
+                name="pixelHeight"
+                promptMessage="Enter a number from 50 to 1200 for the height in pixels"
+                rangeMessage="Enter a number from 50 to 1200 for the height in pixels"
+                required="true" size="10em">Height:</Option>
+            <!--- code comments -->
+            <Option inputType="string" name="axisRangeMsg">Compute axis ranges</Option>
+            <Option inputType="string" name="respMinMaxMsg">Compute response min and max values (include 0 in computations)</Option>
+            <Option inputType="string" name="defOffsetMsg">Define a macro for offset</Option>
+        </Options>
+    </Metadata>
+    <!--- Define the task options relationships                  -->
+    <!--- The UI engine will determine the best respresentation. -->
+    <UI>
+        <Container option="dataTab">
+            <Group open="true" option="dataGroup">
+                <DataItem data="dataSource"/>
+            </Group>
+            <Group open="true" option="rolesGroup">
+                <RoleItem role="category"/>
+                <RoleItem role="group"/>
+                <RoleItem role="barResponse"/>
+                <OptionItem option="statistics1"/>
+                <OptionItem option="barMean"/>
+                <OptionItem option="barSum"/>
+                <RoleItem role="lineResponse"/>
+                <OptionItem option="statistics2"/>
+                <OptionItem option="lineMean"/>
+                <OptionItem option="lineSum"/>
+            </Group>
+            <Group open="false" option="addRolesGroup">
+                <RoleItem role="byVar"/>
+                <RoleItem role="weight"/>
+            </Group>
+        </Container>
+        <Container option="appearanceTab">
+            <Group open="true" option="barsGroup">
+                <OptionItem option="barStatLabels"/>
+                <OptionItem option="useBarColor"/>
+                <OptionItem option="barColor"/>
+                <OptionChoice option="barTrans">
+                    <OptionItem option="barTransDefaultChoice"/>
+                    <OptionItem option="barTrans25Choice"/>
+                    <OptionItem option="barTrans50Choice"/>
+                    <OptionItem option="barTrans75Choice"/>
+                    <OptionItem option="barTrans100Choice"/>
+                </OptionChoice>
+                <Group open="false" option="barDetails">
+                    <OptionItem option="fillGradient"/>
+                    <OptionChoice option="barSkin">
+                        <OptionItem option="none"/>
+                        <OptionItem option="gloss"/>
+                        <OptionItem option="sheen"/>
+                        <OptionItem option="crisp"/>
+                        <OptionItem option="matte"/>
+                        <OptionItem option="pressed"/>
+                    </OptionChoice>
+                    <RoleItem role="barUrlVar"/>
+                </Group>
+            </Group>
+            <Group open="true" option="linesGroup">
+                <OptionItem option="lineStatLabels"/>
+                <OptionItem option="useLineColor"/>
+                <OptionItem option="lineColor"/>
+                <OptionItem option="lineThick"/>
+                <OptionChoice option="lineTrans">
+                    <OptionItem option="lineTransDefaultChoice"/>
+                    <OptionItem option="lineTrans25Choice"/>
+                    <OptionItem option="lineTrans50Choice"/>
+                    <OptionItem option="lineTrans75Choice"/>
+                    <OptionItem option="lineTrans100Choice"/>
+                </OptionChoice>
+                <Group open="false" option="lineDetails">
+                    <OptionChoice option="linePattern">
+                        <OptionItem option="solidLine"/>
+                        <OptionItem option="shortDashLine"/>
+                        <OptionItem option="mediumDashLine"/>
+                        <OptionItem option="longDashLine"/>
+                        <OptionItem option="mediumDashShortDashLine"/>
+                        <OptionItem option="dashDashDotLine"/>
+                        <OptionItem option="dashLine"/>
+                        <OptionItem option="longDashShortDashLine"/>
+                        <OptionItem option="dotLine"/>
+                        <OptionItem option="thinDotLine"/>
+                        <OptionItem option="shortDashDotLine"/>
+                        <OptionItem option="mediumDashDotDotLine"/>
+                    </OptionChoice>
+                    <RoleItem role="lineUrlVar"/>
+                </Group>
+            </Group>
+            <Group open="false" option="categoryAxis">
+                <OptionItem option="catReverse"/>
+                <OptionItem option="sortByData"/>
+                <OptionChoice option="displayCatLabel">
+                    <OptionItem option="defaultLabel"/>
+                    <OptionItem option="noLabel"/>
+                    <OptionItem option="customLabel"/>
+                </OptionChoice>
+                <OptionItem option="catLabel"/>
+                <OptionItem option="catLabelRotation"/>
+                <OptionItem option="catDiagonalRotation"/>
+                <OptionItem option="catVerticalRotation"/>
+                <OptionItem option="catRefLine"/>
+                <OptionItem option="catRefLineValue"/>
+                <OptionChoice option="catRefLineOffset">
+                    <OptionItem option="catRefLineOffsetNegative50Choice"/>
+                    <OptionItem option="catRefLineOffsetNegative25Choice"/>
+                    <OptionItem option="catRefLineOffsetDefaultChoice"/>
+                    <OptionItem option="catRefLineOffset25Choice"/>
+                    <OptionItem option="catRefLineOffset50Choice"/>
+                </OptionChoice>
+                <OptionItem option="catRefValue"/>
+                <OptionItem option="catRefCustom"/>
+                <OptionItem option="catRefCustomLabel"/>
+            </Group>
+            <Group option="yAxes">
+                <OptionItem option="zeroBaseline"/>
+                <OptionItem option="uniformScale"/>
+                <OptionItem option="showBarGrid"/>
+                <Group open="true" option="barAxis">
+                    <OptionChoice option="displayBarLabel">
+                        <OptionItem option="defaultLabel"/>
+                        <OptionItem option="noLabel"/>
+                        <OptionItem option="statsLabel"/>
+                        <OptionItem option="noStatsLabel"/>
+                        <OptionItem option="customLabel"/>
+                    </OptionChoice>
+                    <OptionItem option="barLabel"/>
+                    <OptionItem option="barRefLine"/>
+                    <OptionItem option="barRefLineValue"/>
+                    <OptionItem option="barRefValue"/>
+                    <OptionItem option="barRefCustom"/>
+                    <OptionItem option="barRefCustomLabel"/>
+                </Group>
+                <Group open="true" option="lineAxis">
+                    <OptionChoice option="displayLineLabel">
+                        <OptionItem option="defaultLabel"/>
+                        <OptionItem option="noLabel"/>
+                        <OptionItem option="statsLabel"/>
+                        <OptionItem option="noStatsLabel"/>
+                        <OptionItem option="customLabel"/>
+                    </OptionChoice>
+                    <OptionItem option="lineLabel"/>
+                    <OptionItem option="lineRefLine"/>
+                    <OptionItem option="lineRefLineValue"/>
+                    <OptionItem option="lineRefValue"/>
+                    <OptionItem option="lineRefCustom"/>
+                    <OptionItem option="lineRefCustomLabel"/>
+                </Group>
+            </Group>
+            <Group option="legend">
+                <OptionChoice option="legendLoc">
+                    <OptionItem option="outside"/>
+                    <OptionItem option="inside"/>
+                </OptionChoice>
+            </Group>
+            <Group open="false" option="title">
+                <OptionItem option="titleString"/>
+                <OptionItem option="titleSize"/>
+                <OptionItem option="footnoteString"/>
+                <OptionItem option="footnoteSize"/>
+                <OptionItem option="includeAsFootnote"/>
+            </Group>
+            <Group option="graphSize">
+                <OptionChoice option="dimType">
+                    <OptionItem option="in"/>
+                    <OptionItem option="cm"/>
+                    <OptionItem option="px"/>
+                </OptionChoice>
+                <OptionItem option="inchWidth"/>
+                <OptionItem option="inchHeight"/>
+                <OptionItem option="cmWidth"/>
+                <OptionItem option="cmHeight"/>
+                <OptionItem option="pixelWidth"/>
+                <OptionItem option="pixelHeight"/>
+            </Group>
+        </Container>
+    </UI>
+    <Dependencies>
+        <Dependency condition="($dataSource.getWhereClause()!='')">
+            <Target action="show" conditionResult="true" option="includeAsFootnote"/>
+            <Target action="hide" conditionResult="false" option="includeAsFootnote"/>
+        </Dependency>
+        <Dependency condition="($barResponse.size()>0)">
+            <Target action="show" conditionResult="true" option="statistics1"/>
+            <Target action="hide" conditionResult="false" option="statistics1"/>
+            <Target action="show" conditionResult="true" option="barStat"/>
+            <Target action="hide" conditionResult="false" option="barStat"/>
+        </Dependency>
+        <Dependency condition="($lineResponse.size()>0)">
+            <Target action="show" conditionResult="true" option="statistics2"/>
+            <Target action="hide" conditionResult="false" option="statistics2"/>
+            <Target action="show" conditionResult="true" option="lineStat"/>
+            <Target action="hide" conditionResult="false" option="lineStat"/>
+        </Dependency>
+        <Dependency condition="($group.size()>0)">
+            <Target action="disable" conditionResult="true" option="useBarColor"/>
+            <Target action="enable" conditionResult="false" option="useBarColor"/>
+        </Dependency>
+        <Dependency condition="($group.size()==0 &amp;&amp; $useBarColor=='1')">
+            <Target action="show" conditionResult="true" option="barColor"/>
+            <Target action="hide" conditionResult="false" option="barColor"/>
+        </Dependency>
+        <Dependency condition="($group.size()>0)">
+            <Target action="disable" conditionResult="true" option="useLineColor"/>
+            <Target action="enable" conditionResult="false" option="useLineColor"/>
+        </Dependency>
+        <Dependency condition="($group.size()==0 &amp;&amp; $useLineColor=='1')">
+            <Target action="show" conditionResult="true" option="lineColor"/>
+            <Target action="hide" conditionResult="false" option="lineColor"/>
+        </Dependency>
+        <Dependency condition="($displayCatLabel=='customLabel')">
+            <Target action="show" conditionResult="true" option="catLabel"/>
+            <Target action="hide" conditionResult="false" option="catLabel"/>
+        </Dependency>
+        <Dependency condition="($catLabelRotation=='1')">
+            <Target action="show" conditionResult="true" option="catTickRotate"/>
+            <Target action="hide" conditionResult="false" option="catTickRotate"/>
+        </Dependency>
+        <Dependency condition="($displayBarLabel=='customLabel')">
+            <Target action="show" conditionResult="true" option="barLabel"/>
+            <Target action="hide" conditionResult="false" option="barLabel"/>
+        </Dependency>
+        <Dependency condition="($displayLineLabel=='customLabel')">
+            <Target action="show" conditionResult="true" option="lineLabel"/>
+            <Target action="hide" conditionResult="false" option="lineLabel"/>
+        </Dependency>
+        <Dependency condition="($catRefLine=='1')">
+            <Target action="show" conditionResult="true" option="catRefLineValue"/>
+            <Target action="hide" conditionResult="false" option="catRefLineValue"/>
+            <Target action="show" conditionResult="true" option="catRefLineOffset"/>
+            <Target action="hide" conditionResult="false" option="catRefLineOffset"/>
+            <Target action="show" conditionResult="true" option="catRefLabel"/>
+            <Target action="hide" conditionResult="false" option="catRefLabel"/>
+        </Dependency>
+        <Dependency condition="($catRefLine=='1' &amp;&amp; $catRefLabel=='catRefCustom')">
+            <Target action="show" conditionResult="true" option="catRefCustomLabel"/>
+            <Target action="hide" conditionResult="false" option="catRefCustomLabel"/>
+        </Dependency>
+        <Dependency condition="($barRefLine=='1')">
+            <Target action="show" conditionResult="true" option="barRefLineValue"/>
+            <Target action="hide" conditionResult="false" option="barRefLineValue"/>
+            <Target action="show" conditionResult="true" option="barRefLabel"/>
+            <Target action="hide" conditionResult="false" option="barRefLabel"/>
+        </Dependency>
+        <Dependency condition="($barRefLine=='1' &amp;&amp; $barRefLabel=='barRefCustom')">
+            <Target action="show" conditionResult="true" option="barRefCustomLabel"/>
+            <Target action="hide" conditionResult="false" option="barRefCustomLabel"/>
+        </Dependency>
+        <Dependency condition="($lineRefLine=='1')">
+            <Target action="show" conditionResult="true" option="lineRefLineValue"/>
+            <Target action="hide" conditionResult="false" option="lineRefLineValue"/>
+            <Target action="show" conditionResult="true" option="lineRefLabel"/>
+            <Target action="hide" conditionResult="false" option="lineRefLabel"/>
+        </Dependency>
+        <Dependency condition="($lineRefLine=='1' &amp;&amp; $lineRefLabel=='lineRefCustom')">
+            <Target action="show" conditionResult="true" option="lineRefCustomLabel"/>
+            <Target action="hide" conditionResult="false" option="lineRefCustomLabel"/>
+        </Dependency>
+        <Dependency condition="($titleString!='')">
+            <Target action="enable" conditionResult="true" option="titleSize"/>
+            <Target action="disable" conditionResult="false" option="titleSize"/>
+        </Dependency>
+        <Dependency condition="($footnoteString!='' || ($dataSource.getWhereClause()!='' &amp;&amp; $includeAsFootnote=='1'))">
+            <Target action="enable" conditionResult="true" option="footnoteSize"/>
+            <Target action="disable" conditionResult="false" option="footnoteSize"/>
+        </Dependency>
+        <Dependency condition="($dimType=='px')">
+            <Target action="show" conditionResult="true" option="pixelWidth"/>
+            <Target action="show" conditionResult="true" option="pixelHeight"/>
+            <Target action="hide" conditionResult="true" option="inchWidth"/>
+            <Target action="hide" conditionResult="true" option="inchHeight"/>
+            <Target action="hide" conditionResult="true" option="cmWidth"/>
+            <Target action="hide" conditionResult="true" option="cmHeight"/>
+        </Dependency>
+        <Dependency condition="($dimType=='in')">
+            <Target action="hide" conditionResult="true" option="pixelWidth"/>
+            <Target action="hide" conditionResult="true" option="pixelHeight"/>
+            <Target action="show" conditionResult="true" option="inchWidth"/>
+            <Target action="show" conditionResult="true" option="inchHeight"/>
+            <Target action="hide" conditionResult="true" option="cmWidth"/>
+            <Target action="hide" conditionResult="true" option="cmHeight"/>
+        </Dependency>
+        <Dependency condition="($dimType=='cm')">
+            <Target action="hide" conditionResult="true" option="pixelWidth"/>
+            <Target action="hide" conditionResult="true" option="pixelHeight"/>
+            <Target action="hide" conditionResult="true" option="inchWidth"/>
+            <Target action="hide" conditionResult="true" option="inchHeight"/>
+            <Target action="show" conditionResult="true" option="cmWidth"/>
+            <Target action="show" conditionResult="true" option="cmHeight"/>
+        </Dependency>
+    </Dependencies>
+    <!--- Define the velocity code template.        -->
+    <CodeTemplate><![CDATA[
+##--Extract first item from list--##
+#if($category.size()>0)     #set($CAT=$category.get(0)) #end
+#if($barResponse.size()>0)  #set($barRESP=$barResponse.get(0)) #end
+#if($lineResponse.size()>0) #set($lineRESP=$lineResponse.get(0)) #end
+#if($group.size()>0)        #set($GRP=$group.get(0)) #end
+#if($byVar.size()>0)        #set($BY=$byVar.get(0)) #end
+#if($weight.size()>0)       #set($WGT=$weight.get(0)) #end
+#if($barUrlVar.size()>0)    #set($barURL=$barUrlVar.get(0)) #end
+#if($lineUrlVar.size()>0)   #set($lineURL=$lineUrlVar.get(0)) #end
+
+##--Set Graph Size--##
+#if($dimType=="in")
+    #set($WIDTH="$inchWidth$dimType")
+    #set($HEIGHT="$inchHeight$dimType")
+#end
+
+#if($dimType=="cm")
+    #set($WIDTH="$cmWidth$dimType")
+    #set($HEIGHT="$cmHeight$dimType")
+#end
+
+#if($dimType=="px")
+    #set($WIDTH="$pixelWidth$dimType")
+    #set($HEIGHT="$pixelHeight$dimType")
+#end
+
+#if($BY)
+##--Sort data by BY variable--##
+proc sort data=$dataSource out=_BarLineChartTaskData;
+    by $BY;
+run;
+#end
+
+##--Compute axis ranges--##
+/* $axisRangeMsg */
+proc means data=#if($BY) _BarLineChartTaskData #else $dataSource #end#if($dataSource.getWhereClause()!="")(where=($dataSource.getWhereClause())) #end noprint;
+
+#if($BY)
+##--BY Variable--##
+    by $BY;
+#end
+   
+    class $CAT #if($GRP) $GRP #end / order=data;
+    var $barRESP $lineRESP;
+    output out=_BarLine_(where=(_type_ >#if($GRP) 2 #else 0 #end))
+    #if($barStat=='barSum')
+        #if($lineStat=='lineSum') sum($barRESP $lineRESP)=resp1 resp2
+        #else sum($barRESP)=resp1 mean($lineRESP)=resp2
+        #end
+    #else
+        #if($lineStat=='lineSum') mean($barRESP)=resp1 sum($lineRESP)=resp2
+        #else mean($barRESP $lineRESP)=resp1 resp2
+        #end
+    #end;
+    #if($WGT) weight $WGT; #end
+run;
+
+##--Compute response min and max values (include 0 in computations)--##
+/* $respMinMaxMsg */
+data _null_;
+#if($zeroBaseline=='1')
+    retain respmin 0 respmax 0;
+    retain respmin1 0 respmax1 0 respmin2 0 respmax2 0;
+#else
+    retain respmin 1e10 respmax -1e10;
+    retain respmin1 1e10 respmax1 -1e10 respmin2 1e10 respmax2 -1e10;
+#end
+
+    set _BarLine_ end=last;
+
+    respmin1=min(respmin1, resp1);
+    respmin2=min(respmin2, resp2);
+    respmax1=max(respmax1, resp1);
+    respmax2=max(respmax2, resp2);
+
+    if last then do;
+        call symputx ("respmin1", respmin1);
+        call symputx ("respmax1", respmax1);
+
+        call symputx ("respmin2", respmin2);
+        call symputx ("respmax2", respmax2);
+    
+        call symputx ("respmin", min(respmin1, respmin2));
+        call symputx ("respmax", max(respmax1, respmax2));
+    end;
+run;
+
+##--Define a macro for offset--##
+/* $defOffsetMsg */
+%macro offset ();
+    %if %sysevalf(&respmin eq 0) %then %do; offsetmin=0 %end;
+    %if %sysevalf(&respmax eq 0) %then %do; offsetmax=0 %end;
+%mend offset;
+
+##--Set output size--##
+ods graphics / reset width=$WIDTH height=$HEIGHT imagemap;
+
+##--SGPLOT proc statement--##
+proc sgplot data=#if($BY) _BarLineChartTaskData #else $dataSource #end#if($dataSource.getWhereClause()!="")(where=($dataSource.getWhereClause())) #end nocycleattrs;
+
+#if($BY)
+##--BY Variable--##
+    by $BY;
+#end
+
+##--Build quoted strings for title and footnote to clean up any quotes provided by user--##
+#if($titleString!="") #set($qTitleString=$CTMUtil.doubleQuoteString($titleString)) #end
+#if($footnoteString!="") #set($qFootnoteString=$CTMUtil.doubleQuoteString($footnoteString)) #end
+
+##--TITLE and FOOTNOTE--##
+#set($pt="pt")
+#if($titleString!="") 
+    #set($titleSizePt="$titleSize$pt")
+    title height=$titleSizePt $qTitleString;
+#end
+#if($footnoteString!="" || ($dataSource.getWhereClause()!="" && $includeAsFootnote=='1'))
+    #set($footSizePt="$footnoteSize$pt")
+    #if($dataSource.getWhereClause()!="" && $includeAsFootnote=='1') footnote justify=left height=$footSizePt
+        #set($whereStr="$whereClause $dataSource.getWhereClause()") $CTMUtil.doubleQuoteString($whereStr);
+    #end
+
+    #if($footnoteString!="")
+        footnote2 justify=left height=$footSizePt $qFootnoteString;
+    #end
+#end
+
+#if(($useBarColor && $useBarColor=='1') || $barTrans!='0') #set ($setBarATTRS='Yes') 
+#else #set($setBarATTRS='No')
+#end
+##--Bar chart settings--##
+vbar $CAT / response=$barRESP
+#if($barURL) url=$barURL #end
+#if($GRP) group=$GRP groupdisplay=cluster #end
+#if($barStatLabels=='1') datalabel #end
+#if($setBarATTRS=='Yes') fillattrs=(
+    #if($useBarColor=='1') color=$barColor #end 
+	#if ($barTrans!='0') transparency=$barTrans #end)
+#end
+#if($fillGradient=='1') filltype=gradient #end
+#if($barSkin!='none') dataskin=$barSkin #end
+#if($barStat=='barSum') stat=sum #else stat=mean #end
+#if($displayBarLabel=='statsLabel') statlabel
+#elseif($displayBarLabel=='noStatsLabel') nostatlabel
+#end
+#if($WGT) weight=$WGT #end
+;
+
+#if($lineThick!='1' || $linePattern!='solid' || ($useLineColor && $useLineColor=='1')) #set($setLineATTRS='Yes')
+#else #set($setLineATTRS='No')
+#end
+##--Line chart settings--##
+vline $CAT / response=$lineRESP
+#if($lineURL) url=$lineURL #end
+#if($GRP) group=$GRP #end
+#if($lineStatLabels=='1') datalabel #end
+#if($setLineATTRS=='Yes') lineattrs=(
+    #if($lineThick!='1') thickness=$lineThick #end
+    #if($linePattern!='solid') pattern=$linePattern #end
+    #if($useLineColor=='1') color=$lineColor #end)
+#end 
+#if($lineTrans!='0') transparency=$lineTrans
+#end
+#if($lineStat=='lineSum') stat=sum #else stat=mean #end
+#if($displayLineLabel=='statsLabel') statlabel
+#elseif($displayLineLabel=='noStatsLabel') nostatlabel
+#end
+#if($WGT) weight=$WGT #end
+y2axis
+;
+
+#set($catAxis=0)
+#if($displayCatLabel!='defaultLabel' || $sortByData=='1' || $catReverse=='1' || $catLabelRotation=='1') #set($catAxis=1) #end
+#if($catAxis=='1')
+##--Category Axis--##
+    xaxis
+    #if($sortByData=='1') discreteorder=data #end
+    #if($catReverse=='1') reverse #end
+    #if($displayCatLabel=='noLabel') display=(nolabel) #end
+    #if($displayCatLabel=='customLabel') label=$CTMUtil.doubleQuoteString($catLabel) #end
+    #if($catLabelRotation=='1') valuesrotate=#if($catTickRotate=='catDiagonalRotation') diagonal #else vertical #end #end
+;
+#end
+
+##--Bar Axis--##
+yaxis
+#if($showBarGrid=='1') grid #end
+#if($displayBarLabel=='noLabel') display=(nolabel) #end
+#if($displayBarLabel=='customLabel') label=$CTMUtil.doubleQuoteString($barLabel) #end
+#if($uniformScale=='1') min=&respmin max=&respmax #else min=&respmin1 max=&respmax1 #end%offset();
+
+##--Line Axis--##
+y2axis
+#if($displayLineLabel=='noLabel') display=(nolabel) #end
+#if($displayLineLabel=='customLabel') label=$CTMUtil.doubleQuoteString($lineLabel) #end
+#if($uniformScale=='1') min=&respmin max=&respmax #else min=&respmin2 max=&respmax2 #end%offset();
+
+#if($catRefLine=='1')
+##--Category Reference Line--##
+    refline #if($CAT.get('type')=='Char') $CTMUtil.doubleQuoteString($catRefLineValue) #else $catRefLineValue #end /
+    axis=x lineattrs=(thickness=2 color=blue) 
+	#if($catRefLineOffset!='0') discreteoffset=$catRefLineOffset #end
+ 	label#if($catRefLabel=='catRefCustom')=$CTMUtil.doubleQuoteString($catRefCustomLabel) #end
+    labelattrs=(color=blue)
+;
+#end
+
+#if($barRefLine=='1')
+##--Bar Reference Line--##
+    refline $barRefLineValue / axis=y lineattrs=(thickness=2 color=red)
+    label#if($barRefLabel=='barRefCustom')=$CTMUtil.doubleQuoteString($barRefCustomLabel) #end
+    labelattrs=(color=red)
+;
+#end
+
+#if($lineRefLine=='1')
+##--Line Reference Line--##
+    refline $lineRefLineValue / axis=y2 lineattrs=(thickness=2 color=green)
+    label#if($lineRefLabel=='lineRefCustom')=$CTMUtil.doubleQuoteString($lineRefCustomLabel) #end
+    labelattrs=(color=green)
+;
+#end
+
+##--Legend Settings--##
+keylegend / location=$legendLoc;
+run;
+
+##--Clean up--##
+ods graphics / reset;
+#if($titleString!="") title; #end
+#if($footnoteString!="" || ($dataSource.getWhereClause()!="" && $includeAsFootnote=='1'))
+    #if($dataSource.getWhereClause()!="" && $includeAsFootnote=='1') footnote; #end
+    #if($footnoteString!="") footnote2; #end
+#end
+
+proc datasets library=WORK noprint; 
+    delete _BarLine_ #if($BY)_BarLineChartTaskData #end; 
+run;
+]]></CodeTemplate>
+    <TemplateValues version="3.8"><![CDATA[
+{"noLabel":"No label","dotLine":"Dot","catRefLineValue":"","legend":"LEGEND","catReverse":"0","showBarGrid":"1","px":"Pixels","catRefLineOffsetNegative50Choice":"-0.5","none":"(none)","sasOS":"Linux LIN X64 3.10.0-1062.12.1.el7.x86_64","lineStatLabels":"0","lineMean":"1","barStat":"barMean","linePattern":"solid","mediumDashLine":"Medium-dash","barRefValue":"1","defaultLabel":"Default label","longDashLine":"Long-dash","barStatLabels":"1","legendLoc":"outside","barResponse":"json:[{\"value\":\"MPG_City\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"}]","crisp":"Crisp","defOffsetMsg":"Define a macro for offset","lineRefLine":"0","catLabel":"","pressed":"Pressed","in":"Inches (default)","barSkin":"none","mediumDashDotDotLine":"Medium-dash dot dot","catRefLineOffset":"0","displayLineLabel":"defaultLabel","uniformScale":"0","lineSum":"0","pixelWidth":"640","linesGroup":"LINES","shortDashDotLine":"Short-dash dot","catVerticalRotation":"0","lineTrans":"0","lineDetails":"Details","catLabelRotation":"0","catRefLine":"0","barTrans100Choice":"100%","shortDashLine":"Short-dash","dashDashDotLine":"Dash dash dot","rolesGroup":"ROLES","statistics2":"Statistics:","statistics1":"Statistics:","titleString":"CARS PRODUCTION in MPG per TYPE","lineThick":"3","lineRefLineValue":"","barAxis":"Bar Axis","mediumDashShortDashLine":"Medium-dash short-dash","respMinMaxMsg":"Compute response min and max values (include 0 in computations)","lineUrlVar":"","lineAxis":"Line Axis","graphSize":"GRAPH SIZE","thinDotLine":"Thin-dot","cm":"Cms","barMean":"1","solidLine":"Solid (default)","barTrans75Choice":"75%","barRefLabel":"barRefValue","lineTrans50Choice":"50%","fillGradient":"0","sortByData":"0","sasVersion":"9.47","includeAsFootnote":"0","cmWidth":"16","zeroBaseline":"1","addRolesGroup":"ADDITIONAL ROLES","whereClause":"Where clause:","barRefCustomLabel":"","footnoteSize":"12","cmHeight":"12","axisRangeMsg":"Compute axis ranges","lineRefValue":"1","lineResponse":"json:[{\"value\":\"MPG_Highway\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"}]","lineRefCustom":"0","inside":"Inside","useBarColor":"0","dataTab":"DATA","lineTrans75Choice":"75%","barTrans":"0","catTickRotate":"catDiagonalRotation","displayBarLabel":"defaultLabel","lineRefLabel":"lineRefValue","pixelHeight":"480","group":"json:[{\"value\":\"Origin\",\"type\":\"Char\",\"length\":6,\"format\":\"$6.\",\"informat\":\"$6.\",\"className\":\"RoleObject\"}]","barRefLineValue":"","catRefValue":"1","barUrlVar":"","catRefLineOffset50Choice":"0.5","barTrans50Choice":"50%","dimType":"in","weight":"","barTrans25Choice":"25%","lineColor":"#003399","statsLabel":"Statistics name in label","catRefCustomLabel":"","catRefLabel":"catRefValue","lineStat":"lineMean","catRefCustom":"0","useLineColor":"0","outside":"Outside (default)","lineTrans100Choice":"100%","footnoteString":"","noStatsLabel":"No statistics name in label","appearanceTab":"APPEARANCE","dataSource":{"librarytable":"WORK.0000054804_CARS"},"lineLabel":"","barRefLine":"0","lineTransDefaultChoice":"0% (default)","displayCatLabel":"defaultLabel","catRefLineOffsetNegative25Choice":"-0.25","barRefCustom":"0","titleSize":"14","dashDotDotLine":"Dash dot dot","title":"TITLE AND FOOTNOTE","barColor":"#CAD5E5","byVar":"","barDetails":"Details","catRefLineOffsetDefaultChoice":"0 (default)","barTransDefaultChoice":"0% (default)","inchHeight":"4.8","inchWidth":"6.4","gloss":"Gloss","catRefLineOffset25Choice":"0.25","catDiagonalRotation":"1","sheen":"Sheen","lineRefCustomLabel":"","categoryAxis":"X AXIS","lineTrans25Choice":"25%","dashLine":"Dash","longDashShortDashLine":"Long-dash short-dash","dataGroup":"DATA","barLabel":"","yAxes":"Y AXES","barsGroup":"BARS","customLabel":"Custom label","category":"json:[{\"value\":\"Type\",\"type\":\"Char\",\"length\":6,\"format\":\"$6.\",\"informat\":\"$6.\",\"className\":\"RoleObject\"}]","matte":"Matte","barSum":"0"}
+]]></TemplateValues>
+</Task>

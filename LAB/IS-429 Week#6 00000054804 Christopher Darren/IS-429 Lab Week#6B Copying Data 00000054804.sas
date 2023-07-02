@@ -1,0 +1,20 @@
+/* Generated Code (IMPORT) */
+/* Source File: BASEBALL_00000054804Christopher Darren.csv */
+/* Source Path: /home/u63318200 */
+/* Code generated on: 3/14/23, 11:05 AM */
+
+%web_drop_table(WORK.BASEBALL_00000054804ChrisDarren);
+
+
+FILENAME REFFILE '/home/u63318200/BASEBALL_00000054804Christopher Darren.csv';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=CSV
+	OUT=WORK.BASEBALL_00000054804ChrisDarren;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.BASEBALL_00000054804ChrisDarren; RUN;
+
+
+%web_open_table(WORK.BASEBALL_00000054804ChrisDarren);
